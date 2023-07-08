@@ -25,4 +25,11 @@ class StoreTaskRequest extends FormRequest
             'name' => 'required|max:250'
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'required' => 'The :attribute field is required.',
+        ];
+    }
 }

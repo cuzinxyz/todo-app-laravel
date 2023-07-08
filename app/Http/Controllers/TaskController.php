@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Task;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
@@ -15,8 +17,12 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
-//dd($tasks);
+        $tasks = Task::orderBy('id', 'desc')
+                ->get();
+        // $tasks = DB::table('tasks')
+        //         ->orderBy('updated_at', 'desc')
+        //         ->get();
+// dd($tasks);
         return view('todo', compact('tasks'));
     }
 
@@ -51,7 +57,10 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $task->fill($request->validated());
+        $task->save();
+
+        return redirect()->route('homepage');
     }
 
     /**
@@ -67,6 +76,15 @@ class TaskController extends Controller
             return back()->with('error', 'task list not found!');
         } catch (Exception $e) {
             Log::error($e->getMessage());
+        }
+    }
+
+    public function filter(String $type, Request $request)
+    {
+        if ($request->is('task/*')) {
+            $task = Task::where('is_completed', $type)->get();
+
+            return response()->json($task);
         }
     }
 }

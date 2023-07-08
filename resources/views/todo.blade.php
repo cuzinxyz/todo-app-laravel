@@ -2,6 +2,17 @@
 @extends('layout')
 
 @section('content')
+
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
     <div>
         <form class="task-input" action="{{ route('storeTask') }}" method="POST">
             @csrf
@@ -19,14 +30,14 @@
         </div>
         <button class="clear-btn">Clear All</button>
     </div>
-    <ul class="task-box">
+    <ul class="task-box" transition-style="circle:in:bottom:left">
         @if($tasks->isEmpty())
             <span>You don't have any task here</span>
         @else
             @foreach($tasks as $task)
             <li class="task">
                 <label for="{{$task->id}}">
-                    <input type="checkbox" id="{{$task->id}}">
+{{--                    <input type="checkbox" id="{{$task->id}}">--}}
                     <p class="@if( $task->is_completed == 1 ) checked @else hi @endif">{{$task->name}}</p>
                 </label>
                 <div class="settings">
@@ -47,4 +58,64 @@
             @endforeach
         @endif
     </ul>
+@endsection
+
+@section('js')
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script>
+        $('#pending').click(function() {
+            $.ajax({
+                        url: '/task/0',
+                        type: 'GET',
+                        success: function(data) {
+                            // Xử lý kết quả trả về từ server
+                            console.log(data);
+                            const listTask = data.map((task, index) => {
+                                return `
+            <li class="task">
+                <label for="${task.id}">
+                    <p class="${task.is_completed == 1 ? ' checked' : 'hi'}">${task.name}</p>
+                </label>
+                <div class="settings">
+                    <i onclick="showMenu(this)" class="uil uil-ellipsis-h"></i>
+                    <ul class="task-menu">
+                        <li onclick='window.location.href="/edit/${task.id}"'><i class="uil uil-pen"></i>Edit</li>
+                        <li>
+                            <i class="uil uil-trash"></i>
+                            <form action="/delete/${task.id}" method="POST">
+                                <button class="reset-button" type="submit" onclick="return confirm('Are you sure?');" title="Delete" class="btn btn-sm btn-danger"> Delete </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+                                `;
+                            }).join("");
+                            $('.task-box').html(listTask);
+                        }
+                    });
+        });
+        $('#completed').click(function() {
+            $.ajax({
+                url: '/task/1',
+                type: 'GET',
+                success: function(data) {
+                    // Xử lý kết quả trả về từ server
+                    console.log(data);
+                }
+            });
+        });
+        // $('#filter-button').click(function() {
+        //     var status = $('select[name=status]').val(); // Lấy giá trị của trường status
+        //     $.ajax({
+        //         url: '/items',
+        //         type: 'GET',
+        //         data: { status: status },
+        //         success: function(data) {
+        //             // Xử lý kết quả trả về từ server
+        //             console.log(data);
+        //         }
+        //     });
+        // });
+    </script>
 @endsection

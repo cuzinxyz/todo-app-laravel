@@ -8,7 +8,7 @@
 }
 body{
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     background: linear-gradient(135deg, #4AB1FF, #2D5CFE);
 }
@@ -97,7 +97,23 @@ body{
     margin-top: 20px;
     margin-right: 5px;
     padding: 0 20px 10px 25px;
+    overflow:hidden; overflow-y:scroll;
+    max-height: 340px;
 }
+
+@keyframes circle-in-bottom-left {
+    from {
+        clip-path: circle(0%);
+    }
+    to {
+        clip-path: circle(150% at bottom left);
+    }
+}
+
+[transition-style="in:circle:bottom-left"] {
+    animation: 2.5s cubic-bezier(.25, 1, .30, 1) circle-in-bottom-left both;
+}
+
 .task-box.overflow{
     overflow-y: auto;
     max-height: 300px;
@@ -202,6 +218,7 @@ body{
     }
     .wrapper {
         padding: 20px 0;
+        margin: 20px auto;
     }
     .filters span{
         margin: 0 5px;

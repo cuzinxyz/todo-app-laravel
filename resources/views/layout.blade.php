@@ -17,6 +17,7 @@
 </div>
 
 <script src="/assets/js/script.js"></script>
+@yield('js')
 
 </body>
 </html>
